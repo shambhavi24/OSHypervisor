@@ -1,0 +1,23 @@
+function checkParams(lockId, lockOwner) {
+    var inputErrors = [];
+    var errorMessage;
+    if (!lockId || typeof lockId !== "string") {
+        inputErrors.push(" - lockId missing or not of type 'string'");
+    }
+    if (!lockOwner || typeof lockOwner !== "string") {
+        inputErrors.push(" - lockOwner missing or not of type 'string'");
+    }
+    if (inputErrors.length > 0) {
+        errorMessage = "Mandatory parameters not satisfied:\n" + inputErrors.join("\n");
+        System.error(errorMessage);
+    }
+}
+
+try {
+    checkParams(lockId, lockOwner);
+    System.log("Removing lock on '" + lockId + "' for '" + lockOwner + "'");
+    LockingSystem.unlock(lockId,lockOwner);
+    System.log("Lock removed for '" + lockId + "'");
+} catch (e) {
+    System.error("Action failed to remove lock.",e);
+}

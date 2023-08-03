@@ -1,0 +1,33 @@
+//inputs: lockId, lockOwner( can be VM name)
+
+function checkParams(lockId, lockOwner) {
+    var inputErrors = [];
+    var errorMessage;
+    if (!lockId || typeof lockId !== "string") {
+        inputErrors.push(" - lockId missing or not of type 'string'");
+    }
+    if (!lockOwner || typeof lockOwner !== "string") {
+        inputErrors.push(" - lockOwner missing or not of type 'string'");
+    }
+    if (inputErrors.length > 0) {
+        errorMessage = "Mandatory parameters not satisfied:\n" + inputErrors.join("\n");
+        System.error(errorMessage);
+    }
+}
+
+var lockCreated;
+
+try {
+    checkParams(lockId, lockOwner);
+    System.log("Creating lock on '" + lockId + "' for '" + lockOwner + "'");
+    lockCreated = LockingSystem.lock(lockId,lockOwner);
+    if (lockCreated) {
+        System.log("Lock created for '" + lockOwner + "'");
+    } else {
+        System.log("Exisiting lock found for '" + lockOwner + "'");
+    }
+} catch (e) {
+    System.error("Action failed to create lock.",e);
+}
+
+return lockCreated;
