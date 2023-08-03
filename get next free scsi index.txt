@@ -1,0 +1,113 @@
+//  This commented-out section is for the next release.  returns:  scsiBusNumber:scsiBusIndex   Example: 0:8
+// Inputs arg_vm(Vc:VirtualMachine)
+
+var scsiBusNumbers = new Array();
+	scsiBusNumbers.push(0,1,2,3);
+var scsi = null;
+
+try
+{
+	var scsiDevices = arg_vm.config.hardware.device;
+	
+	if (scsiDevices)
+	{
+		/*
+		for(var i = 0; i < scsiBusNumbers.length; i++)
+		{
+			var scsiIndexNumbers = new Array();
+			scsiIndexNumbers.push(0,1,2,3,4,5,6,8,9,10,11,12,13,14,15);		// 7 is intentionally removed as it is reserved by spec
+			*/
+			
+			for(var j = 0; j < scsiDevices.length; j++)
+			{
+				if ( scsiDevices[j] instanceof VcVirtualBusLogicController || scsiDevices[j] instanceof VcVirtualLsiLogicController 
+				|| scsiDevices[j] instanceof VcParaVirtualSCSIController || scsiDevices[j] instanceof VcVirtualLsiLogicSASController )
+				{
+					
+					for(var i = 0; i < scsiBusNumbers.length; i++)
+					{
+						var scsiIndexNumbers = new Array();
+						scsiIndexNumbers.push(0,1,2,3,4,5,6,8,9,10,11,12,13,14,15);		// 7 is intentionally removed as it is reserved by spec
+						
+						if (scsiDevices[j].busNumber != scsiBusNumbers[i])
+						{
+							//System.debug("SCSI busNumber '" + scsiDevices[j].busNumber + "' and scsiBusNumbers '" + scsiBusNumbers[i] + "' Do Not Match");
+							continue;
+						}
+						else
+						{
+							//System.debug("SCSI busNumber '" + scsiDevices[j].busNumber + "' and scsiBusNumbers '" + scsiBusNumbers[i] + "' Do Match!!!");
+							
+							if (scsiDevices[j].device)
+							{
+								var numOfVirtualDiskDevices = scsiDevices[j].device.length;
+								var scsiVirtualDiskDevices = scsiDevices[j].device;
+								//System.debug("numOfVirtualDiskDevices: " + numOfVirtualDiskDevices);
+								//System.debug("scsiVirtualDiskDevices: " + scsiVirtualDiskDevices.valueOf());
+							}
+				
+				
+							if (scsiVirtualDiskDevices)
+							{
+								for(var k = 0; k < scsiVirtualDiskDevices.length; k++)
+								{
+									var scsiVirtualDiskDeviceKey = scsiVirtualDiskDevices[k];
+									//System.debug("scsiVirtualDiskDeviceKey: " + scsiVirtualDiskDeviceKey);
+									
+									var virtualDiskDevices = arg_vm.config.hardware.device;
+									for (var m = 0; m < virtualDiskDevices.length; m++)
+									{
+										if (virtualDiskDevices[m].key == scsiVirtualDiskDeviceKey)
+										{
+											//System.debug("device found, unitNumber is: " + virtualDiskDevices[m].unitNumber + "       Label: " + virtualDiskDevices[m].deviceInfo.label);
+											var indexNumToRemoveFromScsiIndexNumbers = virtualDiskDevices[m].unitNumber;
+											
+											//System.debug("Position of unitNumber in scsiIndexNumbers: " + scsiIndexNumbers.indexOf(indexNumToRemoveFromScsiIndexNumbers));
+											
+											scsiIndexNumbers.splice(scsiIndexNumbers.indexOf(indexNumToRemoveFromScsiIndexNumbers), 1);
+											//System.debug(scsiIndexNumbers.toString());
+										}
+									}
+									//System.debug("");
+								}
+							} // end if (scsiVirtualDiskDevices)
+						} // end if (scsiDevices[j].busNumber == scsiBusNumbers[i])
+						
+						//System.debug("scsiBusNumber '" +  scsiBusNumbers[i] + "',  scsiIndexNumbers available: " + scsiIndexNumbers.toString() + "       Count: " + scsiIndexNumbers.length);
+						if (scsiIndexNumbers.length > 0)
+						{
+							scsi = String(scsiBusNumbers[i]) + ":" + String(scsiIndexNumbers[0]);
+							//System.debug("Next SCSI Index is: " + scsi);
+							break;
+						}
+						
+					} // end NEW for(var i = 0; i < scsiBusNumbers.length; i++)
+					
+				} // end if ( scsiDevices[j] instanceof
+			} // end for(var j = 0; j < scsiDevices.length; j++)
+			//System.debug("scsiBusNumber '" +  scsiBusNumbers[i] + "',  scsiIndexNumbers available: " + scsiIndexNumbers.toString() + "       Count: " + scsiIndexNumbers.length);
+			/*
+			if (scsiIndexNumbers.length > 0)
+			{
+				scsi = String(scsiBusNumbers[i]) + ":" + String(scsiIndexNumbers[0]);
+				break;
+			}
+			*/
+//		} // end for(var i = 0; i < scsiBusNumbers.length; i++)
+	} // end if (scsiDevices)
+	
+	if (scsi == null)
+		throw "No available SCSI Indexes.";
+	
+	//System.debug(scsi);
+	return scsi;
+}
+catch (ex)
+{
+	var shortDesc = "Error while trying to obtain Next Free SCSI Index.";
+	var longDesc = "Exception found: " + ex;
+	Server.error(shortDesc, longDesc);
+	System.error(shortDesc + "  " + longDesc);
+	
+	throw shortDesc + "  " + longDesc;
+}

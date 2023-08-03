@@ -1,0 +1,47 @@
+//Inputs : arg_datastores(Array/Any), arg_storageSize(number)
+
+//var buffer = .10;
+var buffer = 0;
+var datastore = null;
+
+for (var i in arg_datastores)
+{
+	var capacity = arg_datastores[i].summary.capacity;
+	var freeSpace = arg_datastores[i].summary.freeSpace;
+	var bufferedFreespace = (freeSpace - (capacity * buffer));
+	
+	/*
+	System.log("Storage Object Name: " + arg_datastores[i].summary.name);
+	System.log("Storage Object Buffer: " + buffer);
+	System.log("Storage Object Capacity: " + capacity + "  GB: " + bytesToGB(capacity));
+	System.log("Storage Object FreeSpace: " + freeSpace + "  GB: " + bytesToGB(freeSpace));
+	System.log("Storage Object Buffered FreeSpace: " + bufferedFreespace + "  GB: " + bytesToGB(bufferedFreespace));
+	System.log("Storage Size Needed: " + arg_storageSize);
+	System.log("Result of calculation: " + (Number(bytesToGB(bufferedFreespace)) >= Number(arg_storageSize)));
+	System.log(" ");
+	*/
+	
+	if (Number(bytesToGB(bufferedFreespace)) >= Number(arg_storageSize))
+	{
+		datastore = arg_datastores[i];
+		break;
+	}
+}
+
+
+if (datastore != null)
+{
+	return datastore;
+}
+else
+{
+	throw "No available datastore for disk increase of '" + arg_storageSize + " GB'";
+}
+
+
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+function bytesToGB(byte_size)
+{
+	return Number((byte_size / 1024 / 1024 / 1024).toFixed(2));
+}
