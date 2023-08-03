@@ -1,0 +1,47 @@
+//Inputs: vmObj,snapshotName(string),wfDate(string)
+//output: SelectedSnap(Vc:VirtualMachineSnapshot)
+
+var snapshots = new Array();
+if (vmObj.snapshot) {
+	var snapshotTrees = vmObj.snapshot.rootSnapshotList;
+	for (i in snapshotTrees) {
+		getSnapshotsOfVM(snapshotTrees[i]);
+		}
+	}
+// Do not alter this function has it is recursive
+function getSnapshotsOfVM(tree) {
+	snapshots.push([tree.snapshot, tree.createTime]); // store a tupple of the snapshot and its creation time
+	var trees = tree.childSnapshotList;
+		if (trees != null) {
+			for (index in trees) {
+				if (trees[index] != null)
+					getSnapshotsOfVM(trees[index]);
+					}
+				}
+			}
+// Print the results
+
+for each (var s in snapshots) {
+
+	var str = s[1];
+	str = new Date(str)
+	var newdate = System.formatDate(str, 'YYYY-MM-dd HH:mm:ss')
+    System.log("Snapshot: '" + s[0].name + "' created on: '" + newdate + "'");
+	if((s[0].name == snapshotName) && (newdate == wfDate))
+	{
+		System.log("Selected snapshot Found: " +s[0].name)
+		System.log("Selected snapshot Created Time:" +newdate)
+		SelectedSnap = s[0]
+	}
+	else{
+		//System.log("The selected snapshot is not found!! Please verify")
+		//throw "The selected snapshot is not found!! Please verify"
+		System.log("Processing to find the selected snapshot in the VM!! Continuing the loop")
+	}
+}
+if(SelectedSnap == null)
+	{	
+	System.error("The selected snapshot is not found!! Please verify")
+	throw "The selected snapshot is not found!! Please verify"
+	}
+
