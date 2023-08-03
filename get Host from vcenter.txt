@@ -1,0 +1,45 @@
+//Inputs: hostname, vcentername
+
+System.log("******** getHostFromVcenterCLP Inputs ********");
+System.log("Host : "+host);
+System.log("");
+
+//Check the vCenter Name containing sdk and https://
+if(vCenterName.indexOf("https://") == -1)
+{
+	vCenterName = "https://"+vCenterName;
+}
+if(vCenterName.indexOf(":443/sdk") == -1)
+{
+	vCenterName = vCenterName+":443/sdk"
+}
+System.log("vCenter Name : "+vCenterName);
+hostStr = Server.findAllForType("VC:HostSystem", host);
+if (!hostStr || hostStr.length == 0)
+{
+	throw "No host match for: '" + host + "'";
+}
+else
+{
+	var flag = 0;
+	for each(var hostObj in hostStr)
+	{
+		var sdk = hostObj.sdkConnection;
+		System.log("Host : "+host+", vCenter : "+sdk.name)
+		if(sdk.name.toLowerCase() == vCenterName.toLowerCase())
+		{
+			flag=1;
+			System.log("Host found: " + host+ " in vCenter : "+vCenterName);
+			System.log("******** Outputs ********");
+			System.log("Host Object : "+hostObj);
+			System.log("");
+			return hostObj;
+			break;
+		}
+	}
+	if(flag==0)
+	{
+		throw "Host not found: " + host+ " in vCenter : "+vCenterName;
+	}
+}
+

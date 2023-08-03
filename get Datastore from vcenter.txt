@@ -1,0 +1,47 @@
+//Inputs: Datastore, vCenterName
+
+
+System.log("******** getDatastoreFromVcenterCLP Inputs ********");
+System.log("vCenter Name : "+vCenterName);
+System.log("Datastore : "+datastore);
+System.log("");
+
+//Check the vCenter Name containing sdk and https://
+if(vCenterName.indexOf("https://") == -1)
+{
+	vCenterName = "https://"+vCenterName;
+}
+if(vCenterName.indexOf(":443/sdk") == -1)
+{
+	vCenterName = vCenterName+":443/sdk"
+}
+System.log("vCenter Name : "+vCenterName);
+datastoreStr = Server.findAllForType("VC:Datastore", datastore);
+if (!datastoreStr || datastoreStr.length == 0)
+{
+	throw "No Datatsore match for: '" + datastore + "'";
+}
+else
+{
+	var flag = 0;
+	for each(var datastoreObj in datastoreStr)
+	{
+		var sdk = datastoreObj.sdkConnection;
+		System.log("Datastore : "+datastore+", vCenter : "+sdk.name)
+		if(sdk.name.toLowerCase() == vCenterName.toLowerCase())
+		{
+			flag=1;
+			System.log("Datastore found: " + datastore+ " in vCenter : "+vCenterName);
+			System.log("******** Outputs ********");
+			System.log("Datastore Object : "+datastoreObj);
+			System.log("");
+			return datastoreObj;
+			break;
+		}
+	}
+	if(flag==0)
+	{
+		throw "Datastore not found: " + datastore+ " in vCenter : "+vCenterName;
+	}
+}
+

@@ -1,0 +1,45 @@
+System.log("******** Get the Creds Inputs ********");
+System.log("vCenter Name : "+attvCenterName)
+System.log("vCenter Configuration : "+attvCenterDetailsConfig);
+System.log("");
+
+//Main script
+try
+{
+	//Get the attributes of Token
+	var attributes = attvCenterDetailsConfig.attributes;
+	for each(var attribute in attributes)
+	{
+		//System.log("Quering Attribute : "+attribute.name);
+		System.log("Quering Attribute URL : "+attribute.value.vCenterName+" and matching with "+attvCenterName);
+		System.log("Quering Attribute Username : "+attribute.value.vCenterUsername);
+		//Match the URL with the input URL
+		if(attribute.value.vCenterName.toLowerCase() == attvCenterName.toLowerCase())
+		{
+			outVcenterUsername = attribute.value.vCenterUsername;
+			outVcenterPassword = attribute.value.vCenterPassword;
+			//System.log("Matching Attribute : "+attribute.name);
+			System.log("Matching name : "+attribute.value.vCenterName);
+			System.log("Matching Username : "+outVcenterUsername);
+			System.log("Matching Password : "+outVcenterPassword);
+			System.log("");
+			break;
+		}
+		System.log("");
+	}
+	if(outVcenterUsername && outVcenterPassword)
+	{
+		System.log("The creds is found for instance : "+attvCenterName);
+		System.log("Username : "+outVcenterUsername);
+		System.log("Password : "+outVcenterPassword);
+	}
+	else
+	{
+		throw "The Username and/or Password is not found for instance : "+attvCenterName;
+	}
+}
+catch(e)
+{
+	var error = "Error occured in 'Get the Creds' Task. Error Details : "+e;
+	throw error;
+}
