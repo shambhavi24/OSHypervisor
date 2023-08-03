@@ -1,0 +1,34 @@
+var host;
+attVcenterCheck = "Result: \n"
+var attArray = new Array();
+var attVcenterName = new Array();
+
+var str = wfVcenterNameArr.split(',');
+var newarray = new Array();
+for each(vc in str){
+newarray.push(vc.toLowerCase());
+}
+
+var sdkConnections = VcPlugin.allSdkConnections;
+for(var i in sdkConnections){
+    host = sdkConnections[i]
+	var sdkId = host.sdkId
+	attArray.push(sdkId.toLowerCase())
+	System.log(host.sdkId)
+}
+
+
+for each(var item in newarray){
+      if(attArray.indexOf(item) === -1){
+             System.warn("Selected "+item+", is not found in the inventory")
+             attVcenterCheck+= "Selected vCenter "+item+", is not found in the inventory\n"
+	  }
+      else{ 
+			attVcenterName.push(item)
+            //attVcenterCheck+= "Found: " +item + ", Report generated in "+ attOutputPath+"\n"
+			System.log("Found: " +item + ", Report generated in "+ attOutputPath)}
+}
+
+
+
+
